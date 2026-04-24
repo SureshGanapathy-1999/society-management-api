@@ -1,7 +1,6 @@
 package com.example.Society.Model;
 
 import jakarta.persistence.*;
-import jakarta.persistence.criteria.CriteriaBuilder;
 
 import java.util.List;
 
@@ -13,11 +12,18 @@ public class Society {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // Basic society details
     private String societyName;
     private String address;
     private String city;
     private String state;
     private int pinCode;
+
+    // Relationships
+
+    // One Society contains multiple Wings
+    @OneToMany(mappedBy = "society", cascade = CascadeType.ALL,orphanRemoval = true,fetch = FetchType.LAZY)
+    private List<Wing> wings;
 
     public Long getId() {
         return id;
@@ -75,7 +81,6 @@ public class Society {
         this.wings = wings;
     }
 
-    @OneToMany(mappedBy = "society", cascade = CascadeType.ALL)
-    private List<Wing> wings;
+
 
    }

@@ -10,9 +10,13 @@ public class Wing {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    private String wing_name;
+    // Wing Name
+    private String wingName;
 
-    @ManyToOne
+    // RelationShips
+
+    // one society contains many wings
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "society_id")
     private Society society;
 
@@ -24,12 +28,12 @@ public class Wing {
         this.id = id;
     }
 
-    public String getWing_name() {
-        return wing_name;
+    public String getWingName() {
+        return wingName;
     }
 
-    public void setWing_name(String wing_name) {
-        this.wing_name = wing_name;
+    public void setWingName(String wingName) {
+        this.wingName = wingName;
     }
 
     public Society getSociety() {
