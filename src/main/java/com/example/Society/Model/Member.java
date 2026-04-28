@@ -1,10 +1,11 @@
 package com.example.Society.Model;
 
+import com.example.Society.Config.Ownership;
 import jakarta.persistence.*;
 
 @Entity
 @Table (name = "member")
-public class Member {
+public class Member extends BaseModel{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -16,9 +17,12 @@ public class Member {
     @Column(unique = true, nullable = false)
     private String email;
 
+    @Column(unique = true, nullable = false)
     private String mobileNumber;
 
-    private String ownershipType;
+    @Enumerated(EnumType.STRING)
+    private Ownership ownership;
+
     private String vehicleNumber;
 
     //Relationships
@@ -27,6 +31,15 @@ public class Member {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "flat_id")
     private Flat flat;
+
+    @PrePersist
+    public void prePersist() {
+        if (ownership == null) {
+            ownership = Ownership.OWNER;
+        }
+    }
+
+    //Getters and Setters
 
     public Long getId() {
         return id;
@@ -68,12 +81,12 @@ public class Member {
         this.mobileNumber = mobileNumber;
     }
 
-    public String getOwnershipType() {
-        return ownershipType;
+    public Ownership getOwnership() {
+        return ownership;
     }
 
-    public void setOwnershipType(String ownershipType) {
-        this.ownershipType = ownershipType;
+    public void setOwnership(Ownership ownership) {
+        this.ownership = ownership;
     }
 
     public String getVehicleNumber() {

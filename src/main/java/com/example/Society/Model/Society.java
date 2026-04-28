@@ -6,24 +6,27 @@ import java.util.List;
 
 @Entity
 @Table(name = "society")
-public class Society {
+public class Society extends BaseModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     // Basic society details
+    @Column(nullable = false)
     private String societyName;
     private String address;
     private String city;
     private String state;
-    private int pinCode;
+    private String pinCode;
 
     // Relationships
 
     // One Society contains multiple Wings
     @OneToMany(mappedBy = "society", cascade = CascadeType.ALL,orphanRemoval = true,fetch = FetchType.LAZY)
     private List<Wing> wings;
+
+    //Getters and Setters
 
     public Long getId() {
         return id;
@@ -65,11 +68,11 @@ public class Society {
         this.state = state;
     }
 
-    public int getPinCode() {
+    public String getPinCode() {
         return pinCode;
     }
 
-    public void setPinCode(int pinCode) {
+    public void setPinCode(String pinCode) {
         this.pinCode = pinCode;
     }
 

@@ -3,14 +3,16 @@ package com.example.Society.Model;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "wing")
-public class Wing {
+@Table(name = "wing",
+uniqueConstraints = {@UniqueConstraint(columnNames = {"society_id","wing_name"})})
+public class Wing extends BaseModel{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     // Wing Name
+    @Column(name = "wing_name")
     private String wingName;
 
     // RelationShips
@@ -19,6 +21,8 @@ public class Wing {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "society_id")
     private Society society;
+
+    //Getters and Setters
 
     public long getId() {
         return id;

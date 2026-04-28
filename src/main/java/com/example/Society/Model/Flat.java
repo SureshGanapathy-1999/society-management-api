@@ -3,11 +3,13 @@ package com.example.Society.Model;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "flat")
-public class Flat {
+@Table(name = "flat",
+uniqueConstraints = {@UniqueConstraint(columnNames = {"wing_id","flat_number"})})
+public class Flat extends BaseModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(name = "flat_number")
     private String flatNumber;
     private double maintenanceCost;
     private double flatSqft;
@@ -15,9 +17,11 @@ public class Flat {
     // Relationships
 
     // One wing can have multiple flats
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "wing_id")
     private Wing wing;
+
+    //Getters and Setters
 
     public Long getId() {
         return id;
