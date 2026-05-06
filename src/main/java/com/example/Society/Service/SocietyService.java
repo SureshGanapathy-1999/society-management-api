@@ -33,7 +33,7 @@ public class SocietyService {
 
     // Update
     public Society update(long id, Society updated) {
-        Society society = repository.getById(id);
+        Society society = repository.findById(id).orElseThrow(() -> new RuntimeException("Society Not Found"));
 
         society.setSocietyName(updated.getSocietyName());
         society.setCity(updated.getCity());

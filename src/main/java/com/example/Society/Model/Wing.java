@@ -1,5 +1,6 @@
 package com.example.Society.Model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 @Entity
@@ -20,6 +21,7 @@ public class Wing extends BaseModel{
     // one society contains many wings
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "society_id")
+    @JsonBackReference
     private Society society;
 
     //Getters and Setters

@@ -1,5 +1,6 @@
 package com.example.Society.Model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.util.List;
@@ -23,7 +24,8 @@ public class Society extends BaseModel {
     // Relationships
 
     // One Society contains multiple Wings
-    @OneToMany(mappedBy = "society", cascade = CascadeType.ALL,orphanRemoval = true,fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "society", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @JsonManagedReference
     private List<Wing> wings;
 
     //Getters and Setters
