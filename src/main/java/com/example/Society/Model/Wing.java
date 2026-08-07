@@ -3,6 +3,8 @@ package com.example.Society.Model;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "wing",
 uniqueConstraints = {@UniqueConstraint(columnNames = {"society_id","wing_name"})})
@@ -23,6 +25,10 @@ public class Wing extends BaseModel{
     @JoinColumn(name = "society_id")
     @JsonBackReference
     private Society society;
+
+    //One wing can contain multiple flats
+    @OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    private List<Flat>  flats;
 
     //Getters and Setters
 

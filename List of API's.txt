@@ -1,0 +1,33 @@
+
+API List for Society Management Application
+
+Society
+POST   /api/societies
+GET    /api/societies
+GET    /api/societies/{id}
+PUT    /api/societies/{id}
+DELETE /api/societies/{id}
+
+Wing
+POST   /api/wing/society/{societyId}
+POST   /api/wing
+GET    /api/wing
+GET    /api/wing/{id}
+DELETE /api/wing/{id}
+
+Flats
+POST   /api/flats/wing/{wingId}
+GET    /api/flats
+GET    /api/flats/{flatId}
+GET    /api/flats/wing/{wingId}
+PUT    /api/flats/{flatId}
+DELETE /api/flats/{flatId}
+
+Members
+ /api/members
+POST /api/members/flat/{flatId}
+GET /api/members
+GET /api/members/{memberId}
+PUT /api/members/{memberId}
+DELETE /api/members/{memberId}
+GET /api/members/flat/{flatId}

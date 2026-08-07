@@ -13,6 +13,9 @@ public class Society extends BaseModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true, nullable = false)
+    private String societyCode;
+
     // Basic society details
     @Column(nullable = false)
     private String societyName;
@@ -36,6 +39,14 @@ public class Society extends BaseModel {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getSocietyCode() {
+        return societyCode;
+    }
+
+    public void setSocietyCode(String societyCode) {
+        this.societyCode = societyCode;
     }
 
     public String getSocietyName() {

@@ -18,6 +18,13 @@ public class SocietyService {
     //Create
 
     public Society create(Society society) {
+
+        Society savedSociety = repository.save(society);
+
+        // Generate society code using ID
+        savedSociety.setSocietyCode(
+                "SOC" + String.format("%03d", savedSociety.getId())
+        );
         return repository.save(society);
     }
 

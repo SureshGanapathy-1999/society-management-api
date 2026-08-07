@@ -3,6 +3,7 @@ package com.example.Society.Model;
 import com.example.Society.Config.MaintenanceStatus;
 import jakarta.persistence.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -31,9 +32,15 @@ public class Maintenance extends BaseModel {
     @Column(name = "bill_year")
     private Integer billYear;
 
-    private double maintenanceCost;
-    private double lateFee;
-    private double totalAmount;
+    @Column(nullable = false)
+    private BigDecimal maintenanceCost;
+
+    @Column(nullable = false)
+    private BigDecimal lateFee =  BigDecimal.ZERO;
+
+    @Column(nullable = false)
+    private BigDecimal totalAmount;
+
     private LocalDate dueDate;
 
     @Enumerated(EnumType.STRING)
@@ -41,10 +48,12 @@ public class Maintenance extends BaseModel {
     private MaintenanceStatus maintenanceStatus;
     private LocalDateTime generatedAt;
 
-    @PrePersist
     public void prePersist() {
         if (maintenanceStatus == null) {
             maintenanceStatus = MaintenanceStatus.GENERATED;
+        }
+        if (lateFee == null) {
+            lateFee = BigDecimal.ZERO;
         }
     }
 
@@ -92,28 +101,28 @@ public class Maintenance extends BaseModel {
         this.billYear = billYear;
     }
 
-    public double getMaintenanceCost() {
-        return maintenanceCost;
-    }
-
-    public void setMaintenanceCost(double maintenanceCost) {
-        this.maintenanceCost = maintenanceCost;
-    }
-
-    public double getLateFee() {
-        return lateFee;
-    }
-
-    public void setLateFee(double lateFee) {
-        this.lateFee = lateFee;
-    }
-
-    public double getTotalAmount() {
+    public BigDecimal getTotalAmount() {
         return totalAmount;
     }
 
-    public void setTotalAmount(double totalAmount) {
+    public void setTotalAmount(BigDecimal totalAmount) {
         this.totalAmount = totalAmount;
+    }
+
+    public BigDecimal getLateFee() {
+        return lateFee;
+    }
+
+    public void setLateFee(BigDecimal lateFee) {
+        this.lateFee = lateFee;
+    }
+
+    public BigDecimal getMaintenanceCost() {
+        return maintenanceCost;
+    }
+
+    public void setMaintenanceCost(BigDecimal maintenanceCost) {
+        this.maintenanceCost = maintenanceCost;
     }
 
     public MaintenanceStatus getMaintenanceStatus() {
