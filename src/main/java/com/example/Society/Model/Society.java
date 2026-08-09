@@ -2,8 +2,13 @@ package com.example.Society.Model;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
+
+@Getter
+@Setter
 
 @Entity
 @Table(name = "society")
@@ -19,9 +24,13 @@ public class Society extends BaseModel {
     // Basic society details
     @Column(nullable = false)
     private String societyName;
+
     private String address;
+
     private String city;
+
     private String state;
+
     private String pinCode;
 
     // Relationships
@@ -30,73 +39,5 @@ public class Society extends BaseModel {
     @OneToMany(mappedBy = "society", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     @JsonManagedReference
     private List<Wing> wings;
-
-    //Getters and Setters
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getSocietyCode() {
-        return societyCode;
-    }
-
-    public void setSocietyCode(String societyCode) {
-        this.societyCode = societyCode;
-    }
-
-    public String getSocietyName() {
-        return societyName;
-    }
-
-    public void setSocietyName(String societyName) {
-        this.societyName = societyName;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public String getCity() {
-        return city;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
-    }
-
-    public String getState() {
-        return state;
-    }
-
-    public void setState(String state) {
-        this.state = state;
-    }
-
-    public String getPinCode() {
-        return pinCode;
-    }
-
-    public void setPinCode(String pinCode) {
-        this.pinCode = pinCode;
-    }
-
-    public List<Wing> getWings() {
-        return wings;
-    }
-
-    public void setWings(List<Wing> wings) {
-        this.wings = wings;
-    }
-
-
 
    }

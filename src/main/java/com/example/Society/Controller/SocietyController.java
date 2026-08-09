@@ -1,7 +1,9 @@
 package com.example.Society.Controller;
 
-import com.example.Society.Model.Society;
+import com.example.Society.DTO.SocietyRequestDTO;
+import com.example.Society.DTO.SocietyResponseDTO;
 import com.example.Society.Service.SocietyService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,26 +19,26 @@ public class SocietyController {
 
     //Create
     @PostMapping
-    public Society create(@RequestBody Society society) {
-        return service.create(society);
+    public SocietyResponseDTO create(@Valid @RequestBody SocietyRequestDTO requestDTO) {
+        return service.create(requestDTO);
     }
 
     //GetALL Societies
     @GetMapping
-    public List<Society> getAll() {
+    public List<SocietyResponseDTO> getAll() {
         return service.getAll();
     }
 
     //GetBy ID
     @GetMapping("/{id}")
-    public Society getById(@PathVariable long id){
-        return service.getById(id);
+    public SocietyResponseDTO getById(@PathVariable long id){
+        return service.findById(id);
     }
 
     //Update
     @PutMapping("/{id}")
-    public Society update(@PathVariable long id, @RequestBody Society society) {
-        return service.update(id,society);
+    public SocietyResponseDTO update(@PathVariable long id,@Valid @RequestBody SocietyRequestDTO societyRequestDTO) {
+        return service.update(id,societyRequestDTO);
     }
 
     //Delete
