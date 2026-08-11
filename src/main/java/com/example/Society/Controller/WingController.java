@@ -1,7 +1,9 @@
 package com.example.Society.Controller;
 
-import com.example.Society.Model.Wing;
+import com.example.Society.DTO.WingRequestDTO;
+import com.example.Society.DTO.WingResponseDTO;
 import com.example.Society.Service.WingService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,33 +18,27 @@ public class WingController {
         this.service = service;
     }
 
-    //Add wing for society
-    @PostMapping("/society/{SocietyId}")
-    public Wing addWingToSociety(@PathVariable Long SocietyId, @RequestBody Wing wing){
-        return service.addWingToSociety(SocietyId,wing);
-    }
-
-    //create
-    @PostMapping
-    public Wing create(@RequestBody Wing wing) {
-        return service.create(wing);
+    //Create wing for society
+    @PostMapping("/society/{societyId}")
+    public WingResponseDTO addWingToSociety(@PathVariable Long societyId, @Valid @RequestBody WingRequestDTO wingRequestDTO){
+        return service.addWingToSociety(societyId,wingRequestDTO);
     }
 
     //Get All
     @GetMapping
-    public List<Wing> getAll() {
+    public List<WingResponseDTO> getAll() {
         return service.getAll();
     }
 
     //Get By ID
     @GetMapping("/{id}")
-    public Wing getById(@PathVariable long id){
+    public WingResponseDTO getById(@PathVariable Long id){
         return service.getById(id);
     }
 
     //Delete Wing
     @DeleteMapping("/{id}")
-    public void deleteById(@PathVariable long id){
+    public void deleteById(@PathVariable Long id){
         service.delete(id);
     }
 }

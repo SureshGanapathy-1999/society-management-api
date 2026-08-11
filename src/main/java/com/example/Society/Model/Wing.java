@@ -2,8 +2,12 @@ package com.example.Society.Model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-
+import lombok.Getter;
+import lombok.Setter;
 import java.util.List;
+
+@Getter
+@Setter
 
 @Entity
 @Table(name = "wing",
@@ -12,7 +16,7 @@ public class Wing extends BaseModel{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     // Wing Name
     @Column(name = "wing_name")
@@ -30,29 +34,4 @@ public class Wing extends BaseModel{
     @OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     private List<Flat>  flats;
 
-    //Getters and Setters
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getWingName() {
-        return wingName;
-    }
-
-    public void setWingName(String wingName) {
-        this.wingName = wingName;
-    }
-
-    public Society getSociety() {
-        return society;
-    }
-
-    public void setSociety(Society society) {
-        this.society = society;
-    }
 }
