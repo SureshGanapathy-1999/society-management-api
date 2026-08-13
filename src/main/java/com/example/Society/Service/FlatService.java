@@ -1,5 +1,7 @@
 package com.example.Society.Service;
 
+import com.example.Society.DTO.FlatRequestDTO;
+import com.example.Society.DTO.FlatResponseDTO;
 import com.example.Society.Model.Flat;
 import com.example.Society.Model.Wing;
 import com.example.Society.Repository.FlatRepository;
@@ -22,42 +24,70 @@ public class FlatService {
 
     //create flat inside wing
 
-    public Flat createFlat(Long wingId, Flat flat) {
+    public FlatResponseDTO createFlat(Long wingId, FlatRequestDTO flatRequestDTO) {
         Wing wing = wingRepository.findById(wingId).orElseThrow(() -> new RuntimeException("Wing not found"));
+
+        Flat flat = new Flat();
+
+        flat.setFlatNumber(flatRequestDTO.getFlatNumber());
+        flat.setFlatSqft(flatRequestDTO.getFlatSqft());
+        flat.setMaintenanceCost(flatRequestDTO.getMaintenanceCost());
         flat.setWing(wing);
 
-        return repository.save(flat);
+        Flat savedFlat = repository.save(flat);
+
+        return convertToFlatResponseDTO(savedFlat);
     }
 
-    // get All flats
-    public List<Flat> getAllFlats(){
-        return repository.findAll();
+    // Get all flats
+    public List<FlatResponseDTO> getAllFlats(){
+        return repository.findAll().stream().map(this::convertToFlatResponseDTO).toList();
     }
 
     // get Flat by ID
-    public Flat getFlatById(Long flatId) {
-        return repository.findById(flatId).orElseThrow(() -> new RuntimeException("Flat not found"));
+    public FlatResponseDTO getFlatById(Long flatId) {
+        Flat flat = repository.findById(flatId).orElseThrow(() -> new RuntimeException("Flat not found"));
+
+        return convertToFlatResponseDTO(flat);
     }
 
 
-    public List<Flat> getFlatsByWing(Long wingId) {
-        return repository.findByWingId(wingId);
+    public List<FlatResponseDTO> getFlatsByWing(Long wingId) {
+        return repository.findByWingId(wingId).stream().map(this::convertToFlatResponseDTO).toList();
+
     }
 
     public String deleteFlat(Long flatId) {
         Flat flat = repository.findById(flatId).orElseThrow(() -> new RuntimeException("Flat not found"));
 
         repository.deleteById(flatId);
-        return "Flat Deleted SuccessFully";
+        return "Flat Deleted Successfully";
     }
 
-    public Flat updateFlatInfo(Long flatId, Flat updatedFlat) {
+    public FlatResponseDTO updateFlatInfo(Long flatId, FlatRequestDTO updatedFlat) {
         Flat flat = repository.findById(flatId).orElseThrow(() -> new RuntimeException("Flat not found"));
 
         flat.setFlatNumber(updatedFlat.getFlatNumber());
         flat.setFlatSqft(updatedFlat.getFlatSqft());
         flat.setMaintenanceCost(updatedFlat.getMaintenanceCost());
 
-        return repository.save(flat);
+        Flat updated =  repository.save(flat);
+
+        return convertToFlatResponseDTO(updated);
+    }
+
+    // Response DTO mapped class
+
+    private FlatResponseDTO convertToFlatResponseDTO(Flat flat) {
+        FlatResponseDTO responseDTO = new FlatResponseDTO();
+
+        responseDTO.setId(flat.getId());
+        responseDTO.setFlatNumber(flat.getFlatNumber());
+        responseDTO.setFlatSqft(flat.getFlatSqft());
+        responseDTO.setMaintenanceCost(flat.getMaintenanceCost());
+        responseDTO.setWingId(flat.getWing().getId());
+        responseDTO.setWingName(flat.getWing().getWingName());
+
+        return responseDTO;
     }
 }

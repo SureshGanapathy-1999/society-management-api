@@ -1,7 +1,9 @@
 package com.example.Society.Controller;
 
-import com.example.Society.Model.Flat;
+import com.example.Society.DTO.FlatRequestDTO;
+import com.example.Society.DTO.FlatResponseDTO;
 import com.example.Society.Service.FlatService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,38 +20,38 @@ public class FlatController {
 
     //Create flat inside wing
     @PostMapping("/wing/{wingId}")
-    public Flat wing(@PathVariable Long wingId, @RequestBody Flat flat) {
-        return flatService.createFlat(wingId,flat);
+    public FlatResponseDTO createFlat(@PathVariable Long wingId, @Valid @RequestBody FlatRequestDTO flatRequestDTO) {
+        return flatService.createFlat(wingId,flatRequestDTO);
     }
 
-    //Get All flats
+    //Get all flats
     @GetMapping
-    public List<Flat> getAllFlats() {
+    public List<FlatResponseDTO> getAllFlats() {
         return flatService.getAllFlats();
     }
 
-    //get flat by id
+    //Get flat by id
     @GetMapping("/{flatId}")
-    public Flat getFlatById(@PathVariable Long flatId) {
+    public FlatResponseDTO getFlatById(@PathVariable Long flatId) {
         return flatService.getFlatById(flatId);
     }
 
-    //Get Flats By Wing
+    //Get flats by wing
     @GetMapping("/wing/{wingId}")
-    public List<Flat> getFlatsByWingId(@PathVariable Long wingId) {
+    public List<FlatResponseDTO> getFlatsByWingId(@PathVariable Long wingId) {
         return flatService.getFlatsByWing(wingId);
     }
 
-    //Delete By ID
+    //Delete by ID
     @DeleteMapping("/{flatId}")
     public void deleteFlatById(@PathVariable Long flatId) {
         flatService.deleteFlat(flatId);
     }
 
-    //Update Flat by ID
+    //Update flat by ID
     @PutMapping("/{flatId}")
-    public Flat updateFlat(@PathVariable Long flatId, @RequestBody Flat flat) {
-        return flatService.updateFlatInfo(flatId,flat);
+    public FlatResponseDTO updateFlat(@PathVariable Long flatId, @Valid @RequestBody FlatRequestDTO flatRequestDTO) {
+        return flatService.updateFlatInfo(flatId,flatRequestDTO);
     }
 
 }

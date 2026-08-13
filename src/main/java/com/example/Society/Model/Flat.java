@@ -1,6 +1,13 @@
 package com.example.Society.Model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.math.BigDecimal;
+
+@Getter
+@Setter
 
 @Entity
 @Table(name = "flat",
@@ -9,57 +16,14 @@ public class Flat extends BaseModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "flat_number")
+    @Column(name = "flat_number", nullable = false)
     private String flatNumber;
-    private double maintenanceCost;
-    private double flatSqft;
+    private BigDecimal maintenanceCost;
+    private BigDecimal flatSqft;
 
     // Relationships
-
     // One wing can have multiple flats
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "wing_id")
+    @JoinColumn(name = "wing_id", nullable = false)
     private Wing wing;
-
-    //Getters and Setters
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getFlatNumber() {
-        return flatNumber;
-    }
-
-    public void setFlatNumber(String flatNumber) {
-        this.flatNumber = flatNumber;
-    }
-
-    public double getMaintenanceCost() {
-        return maintenanceCost;
-    }
-
-    public void setMaintenanceCost(double maintenanceCost) {
-        this.maintenanceCost = maintenanceCost;
-    }
-
-    public double getFlatSqft() {
-        return flatSqft;
-    }
-
-    public void setFlatSqft(double flatSqft) {
-        this.flatSqft = flatSqft;
-    }
-
-    public Wing getWing() {
-        return wing;
-    }
-
-    public void setWing(Wing wing) {
-        this.wing = wing;
-    }
 }
