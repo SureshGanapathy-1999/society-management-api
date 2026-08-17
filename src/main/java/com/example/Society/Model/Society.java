@@ -2,6 +2,7 @@ package com.example.Society.Model;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -31,6 +32,10 @@ public class Society extends BaseModel {
 
     private String state;
 
+    @Pattern(
+            regexp = "^[1-9][0-9]{5}$",
+            message = "Invalid PIN code"
+    )
     private String pinCode;
 
     // Relationships

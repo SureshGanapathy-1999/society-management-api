@@ -1,44 +1,44 @@
 package com.example.Society.Controller;
 
-
-import com.example.Society.Model.Flat;
-import com.example.Society.Model.Member;
+import com.example.Society.DTO.MemberRequestDTO;
+import com.example.Society.DTO.MemberResponseDTO;
 import com.example.Society.Service.MemberService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.*;
 
 @RestController
 @RequestMapping("/api/member")
 public class MemberController {
 
-    @Autowired
     private MemberService memberService;
+
+    public MemberController(MemberService memberService) {
+        this.memberService = memberService;
+    }
 
     //Create Member for a Flat
     @PostMapping("/flat/{flatId}")
-    public Member createMember(@PathVariable Long flatId, @RequestBody Member member) {
-        return memberService.createMember(flatId,member);
+    public MemberResponseDTO createMember(@PathVariable Long flatId, @Valid @RequestBody MemberRequestDTO memberRequestDTO) {
+        return memberService.createMember(flatId,memberRequestDTO);
     }
 
     //Get All Members
     @GetMapping
-    public List<Member> getAllMembers() {
+    public List<MemberResponseDTO> getAllMembers() {
         return memberService.getAllMembers();
     }
 
     //Get Member by ID
     @GetMapping("/{memberId}")
-    public Member getMemberById(@PathVariable Long memberId) {
+    public MemberResponseDTO getMemberById(@PathVariable Long memberId) {
         return memberService.getMemberByID(memberId);
     }
 
     //Update Member
     @PutMapping("/{memberId}")
-    public Member updateMember(@PathVariable Long memberId, @RequestBody Member member) {
-        return memberService.updateMember(memberId, member);
+    public MemberResponseDTO updateMember(@PathVariable Long memberId, @Valid @RequestBody MemberRequestDTO memberRequestDTO) {
+        return memberService.updateMember(memberId, memberRequestDTO);
     }
 
     //Delete Member
@@ -48,9 +48,9 @@ public class MemberController {
     }
 
     // Get Member By Flat
-    @GetMapping("/flat/{flatID}")
-    public List<Flat> getMemberByFlat(@PathVariable Long flatID) {
-        return memberService.getMemberByFlat(flatID);
+    @GetMapping("/flat/{flatId}")
+    public MemberResponseDTO getMemberByFlat(@PathVariable Long flatId) {
+        return memberService.getMemberByFlat(flatId);
     }
 
 }

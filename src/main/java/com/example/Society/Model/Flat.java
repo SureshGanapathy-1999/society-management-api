@@ -1,6 +1,7 @@
 package com.example.Society.Model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -18,7 +19,8 @@ public class Flat extends BaseModel {
     private Long id;
     @Column(name = "flat_number", nullable = false)
     private String flatNumber;
-    private BigDecimal maintenanceCost;
+
+    @NotNull(message = "Flat Sq.Ft is required")
     private BigDecimal flatSqft;
 
     // Relationships
@@ -26,4 +28,9 @@ public class Flat extends BaseModel {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "wing_id", nullable = false)
     private Wing wing;
+
+    // One member can own multiple flats
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member owner;
 }

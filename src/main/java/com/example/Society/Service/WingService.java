@@ -51,8 +51,11 @@ public class WingService {
     }
 
     //Delete
-    public void delete(Long id){
-        repository.deleteById(id);
+    public void delete(Long id) {
+        Wing wing = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Wing not found"));
+
+        repository.delete(wing);
     }
 
     // Converting Entity into Response DTO

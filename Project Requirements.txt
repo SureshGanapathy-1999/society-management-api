@@ -1,0 +1,1062 @@
+1. Society & Building Structure
+Q1. Will the application support one society or multiple societies?
+
+Answer: Multiple societies.
+
+The database will be designed to support:
+
+Society
+   |
+   +--- Wing
+          |
+          +--- Flat
+
+Even if the first deployment contains only one society, the database will support multiple societies.
+
+Q2. Do we need a Floor entity?
+
+Answer: No, not in V1.
+
+We will use the flat number to identify the floor logically.
+
+Example:
+
+101 → Floor 1
+201 → Floor 2
+301 → Floor 3
+...
+701 → Floor 7
+
+The application should not depend on this pattern programmatically. Flat numbers are identifiers, not a replacement for a Floor entity.
+
+Q3. How will flats be numbered?
+
+Answer: Flat numbers will be manually entered.
+
+Example:
+
+101
+102
+103
+104
+105
+
+
+201
+202
+203
+204
+205
+
+The system will not automatically generate flat numbers.
+
+Q4. Are the number of floors/flats fixed?
+
+Answer: The current society structure is known, but the application should not hard-code 35 flats or 7 floors.
+
+Individual flats can be added or deleted.
+
+Q5. Are multiple wings/buildings supported?
+
+Answer: Yes.
+
+Recommended naming:
+
+Wing A
+Wing B
+Wing C
+
+For the database, we should store a configurable wingName rather than hard-coding A/B/C.
+
+2. Flat
+Q6. What area should be used for maintenance?
+
+Answer: Built-up area.
+
+Q7. Can flat area change after creation?
+
+Answer: No in V1.
+
+The built-up area is considered fixed.
+
+Q8. What data type should be used for sqft?
+
+Answer: BigDecimal.
+
+Example:
+
+private BigDecimal flatSqft;
+Q9. Can one Member own multiple Flats?
+
+Answer: Yes.
+
+This is an important design rule.
+
+Example:
+
+Suresh
+  |
+  +--- Flat 101
+  |
+  +--- Flat 205
+
+There should be one Member record, not two.
+
+Q10. Can multiple Members jointly own one Flat?
+
+Answer: No.
+
+One Flat has one current owner in V1.
+
+Q11. Can a company own a Flat?
+
+Answer: No.
+
+Only an individual Member can own a Flat in V1.
+
+Q12. Can ownership be transferred?
+
+Answer: Yes.
+
+Example:
+
+Flat 101
+Owner → Suresh
+
+
+Suresh sells Flat 101
+
+
+Flat 101
+Owner → Ravi
+Q13. Do we need ownership history?
+
+Answer: Not as a separate entity in V1.
+
+However, ownership changes should be auditable.
+
+A future V2 entity can be:
+
+FlatOwnershipHistory
+Q14. Can a Flat exist without an owner?
+
+Answer: No.
+
+A Flat should always have a current owner.
+
+Q15. Do we need Flat Status?
+
+Answer: No.
+
+We are removing:
+
+VACANT
+OWNER_OCCUPIED
+TENANT_OCCUPIED
+COMPANY_LEASED
+
+from V1.
+
+If required later, we can introduce it.
+
+Q16. Do we need tenant management?
+
+Answer: No, not in V1.
+
+Q17. Should the owner's name be displayed?
+
+Answer: Yes.
+
+Whenever Flat information is returned, the owner's name should be available where appropriate.
+
+3. Member
+Q18. What information should a Member contain?
+
+Answer:
+
+Member
+----------------
+id
+firstName
+lastName
+mobileNumber
+status
+user
+Q19. Should Member contain email?
+
+Answer: No.
+
+Email will be handled by the authentication/User side if required.
+
+Q20. Is mobile number mandatory?
+
+Answer: Yes.
+
+Q21. Should mobile number be unique?
+
+Answer: Yes.
+
+Because one person owning multiple flats should still be represented by one Member.
+
+Q22. Can one person with two Flats have two Member records?
+
+Answer: No.
+
+Example:
+
+Member ID: 10
+Name: Suresh
+Mobile: XXXXXXXXXX
+
+
+Owns:
+    Flat 101
+    Flat 205
+Q23. Can a Member exist without a User account?
+
+Answer: No.
+
+Every active Member should have an associated User account for V1.
+
+Q24. Can a Member create their own account?
+
+Answer: Yes.
+
+Q25. Can Admin create a Member account?
+
+Answer: Yes.
+
+Q26. Should Member have a status?
+
+Answer: Yes.
+
+ACTIVE
+INACTIVE
+Q27. Should Members be physically deleted?
+
+Answer: Preferably no when historical records exist.
+
+Instead:
+
+ACTIVE → INACTIVE
+
+This preserves financial and audit history.
+
+Q28. What happens when a Member sells one Flat?
+
+If the Member still owns another Flat:
+
+Member → ACTIVE
+
+If the Member no longer owns any Flat and has no active society relationship:
+
+Member → INACTIVE
+4. User & Authentication
+Q29. Should User and Member be separate entities?
+
+Answer: Yes.
+
+This is the recommended architecture.
+
+User
+ ↓
+Authentication / Security
+
+
+Member
+ ↓
+Society Profile
+Q30. What is the User → Member relationship?
+
+Answer:
+
+User 1 ↔ 1 Member
+
+for Member accounts.
+
+An Admin User does not require a Member record.
+
+Q31. Can one User represent multiple Members?
+
+Answer: No.
+
+Q32. What login method will we use?
+
+Answer: Username + Password for V1.
+
+Your existing User entity already supports this.
+
+Q33. What roles are required?
+
+Answer:
+
+ADMIN
+MEMBER
+Q34. Do we need SUPER_ADMIN?
+
+Answer: No, not in V1.
+
+Q35. What authentication technology will we use?
+
+Answer:
+
+Spring Security
+JWT
+Role-Based Authorization
+Q36. Should inactive users be prevented from logging in?
+
+Answer: Yes.
+
+An inactive/disabled User should not be allowed to authenticate.
+
+5. Vehicle
+Q37. Should Vehicle be a separate entity?
+
+Answer: Yes.
+
+Q38. Can one Member own multiple vehicles?
+
+Answer: Yes.
+
+Relationship:
+
+Member 1 ---- N Vehicle
+Q39. What information should Vehicle contain?
+
+V1:
+
+Vehicle
+----------------
+id
+vehicleNumber
+vehicleType
+vehicleModel
+member
+Q40. Should vehicle number be unique?
+
+Answer: Yes.
+
+Q41. Do we need parking slot management?
+
+Answer: No, not in V1.
+
+Q42. Do we need vehicle status?
+
+Answer: No, not in V1.
+
+6. Maintenance Rate
+Q43. What is the initial maintenance rate?
+
+Answer:
+
+₹3 per sqft per month
+Q44. Does the rate apply to all Flats?
+
+Answer: Yes.
+
+Q45. Can the rate change?
+
+Answer: Yes.
+
+Q46. Who can change the rate?
+
+Answer: Admin.
+
+Q47. Should rate changes be authorized/audited?
+
+Answer: Yes.
+
+Q48. Should rate history be maintained?
+
+Answer: Yes.
+
+Example:
+
+Apr 2026 → ₹3.00
+May 2026 → ₹3.00
+Jan 2027 → ₹3.50
+Q49. Should old bills change when the rate changes?
+
+Answer: No.
+
+Historical bills must retain the original rate.
+
+Q50. Should the rate be hard-coded?
+
+Answer: No.
+
+It should be configurable.
+
+7. Maintenance Calculation
+Q51. What is the maintenance formula?
+
+Answer:
+
+Maintenance = Built-up Area × Maintenance Rate
+
+Example:
+
+650 sqft × ₹3
+= ₹1,950
+Q52. What datatype should monetary values use?
+
+Answer: BigDecimal.
+
+8. Monthly Maintenance Bill
+Q53. When should monthly bills be generated?
+
+Answer: 1st of every month.
+
+Q54. Should generation be automatic?
+
+Answer: Yes.
+
+A scheduled job will generate the bills automatically.
+
+Q55. Should Admin have a manual generation/retry option?
+
+Answer: Yes.
+
+This is a safety mechanism in case the scheduled job fails.
+
+Q56. Can duplicate bills be generated?
+
+Answer: No.
+
+The following combination must be unique:
+
+Flat + Month + Year
+Q57. What information should Maintenance contain?
+
+Recommended:
+
+Maintenance
+---------------------
+id
+billNumber
+flat
+billMonth
+billYear
+flatSqft
+maintenanceRate
+maintenanceAmount
+lateFee
+totalAmount
+dueDate
+status
+generatedAt
+Q58. Should sqft used for billing be stored?
+
+Answer: Yes.
+
+Q59. Should the maintenance rate used for billing be stored?
+
+Answer: Yes.
+
+This creates a historical snapshot.
+
+9. Due Date
+Q60. What is the due date?
+
+Answer:
+
+15th of every month
+Q61. When does penalty begin?
+
+Answer:
+
+16th
+Q62. Do we need special weekend/holiday rules?
+
+Answer: No, not in V1.
+
+10. Penalty
+Q63. What is the penalty?
+
+Answer:
+
+₹100 fixed penalty
+Q64. When is the penalty applied?
+
+Answer:
+
+After the 15th
+Starting from the 16th
+Q65. Should the penalty be displayed separately?
+
+Answer: Yes.
+
+Example:
+
+Maintenance     ₹1,950
+Late Fee          ₹100
+----------------------
+Total            ₹2,050
+Q66. Can Admin waive a penalty?
+
+Answer: Yes.
+
+Q67. Should penalty waiver be audited?
+
+Answer: Yes.
+
+Record:
+
+Who
+When
+Amount
+Reason
+11. Payment
+Q68. Will payments be online only?
+
+Answer: Yes.
+
+No cash/cheque/manual payment in V1.
+
+Q69. Which payment gateway?
+
+Answer:
+
+Razorpay
+Q70. Should frontend response alone mark payment as successful?
+
+Answer: Absolutely not.
+
+Backend must verify the Razorpay payment.
+
+Flow:
+
+Member
+ ↓
+Razorpay
+ ↓
+Payment
+ ↓
+Backend Verification/Webhook
+ ↓
+Payment marked successful
+Q71. Are partial payments supported?
+
+Answer: No.
+
+Q72. Are advance payments supported?
+
+Answer: No.
+
+Q73. Can multiple bills be paid together?
+
+Answer: No, not in V1.
+
+Each maintenance bill is paid separately.
+
+Q74. Can failed payments be retried?
+
+Answer: Yes.
+
+Q75. Should successful payments generate receipts?
+
+Answer: Yes.
+
+12. Payment Status
+Q76. What payment statuses are required?
+
+Answer:
+
+PENDING
+PAID
+FAILED
+
+No PARTIALLY_PAID because partial payments aren't supported.
+
+Q77. Should failed payments remain in history?
+
+Answer: Yes.
+
+This is useful for audit and troubleshooting.
+
+13. Payment Information
+
+A Payment record should contain approximately:
+
+Payment
+----------------
+id
+maintenance
+amount
+status
+razorpayOrderId
+razorpayPaymentId
+paymentTimestamp
+failureReason
+
+The exact Razorpay fields will be finalized when we implement the integration.
+
+14. Receipt
+Q78. What should a receipt contain?
+Receipt Number
+Payment Date
+Member Name
+Flat Number
+Bill Number
+Maintenance Month
+Maintenance Amount
+Late Fee
+Total Paid
+Razorpay Payment ID
+Payment Status
+15. Outstanding / Dues
+Q79. Should outstanding dues be automatically calculated?
+
+Answer: Yes.
+
+Q80. Should penalties be included?
+
+Answer: Yes.
+
+Q81. What should the Member see?
+Current Month Due
+Previous Dues
+Late Fees
+Total Outstanding
+Q82. Should Admin see all outstanding Flats?
+
+Answer: Yes.
+
+Q83. Should old unpaid maintenance continue as outstanding?
+
+Answer: Yes.
+
+16. Member Dashboard
+Q84. What should a Member see?
+My Profile
+My Flats
+Current Maintenance
+Previous Dues
+Total Outstanding
+Payment History
+Receipts
+Vehicles
+Q85. If a Member owns two Flats?
+
+Both should appear.
+
+Example:
+
+Suresh
+
+
+Flat 101
+August → ₹1,950
+
+
+Flat 205
+August → ₹2,400
+Q86. Can the Member pay both together?
+
+Answer: No, not in V1.
+
+Each bill is paid individually.
+
+17. Admin Dashboard
+Q87. What should Admin see?
+Total Societies
+Total Wings
+Total Flats
+Total Members
+
+
+Expected Collection
+Collected Amount
+Pending Amount
+
+
+Penalty Collected
+Paid Flats
+Pending Flats
+Q88. Can Admin view Flat-wise payment status?
+
+Answer: Yes.
+
+Q89. What filters should Admin have?
+Month
+Year
+Flat
+Member
+Payment Status
+18. Reports
+Q90. Which reports are required?
+
+V1:
+
+1. Monthly Collection Report
+2. Flat-wise Outstanding Report
+3. Payment History Report
+4. Penalty Report
+5. Monthly Maintenance Report
+Q91. Should reports support historical months?
+
+Answer: Yes.
+
+Q92. Excel or PDF?
+
+Answer: Excel should be prioritized for V1.
+
+PDF can be added later.
+
+Q93. Should payment transaction IDs appear in reports?
+
+Answer: Yes, where relevant.
+
+19. Audit
+Q94. Should payments be editable?
+
+Answer: Payment history should effectively be immutable.
+
+Financial records should not simply be overwritten.
+
+Q95. Should Admin actions be logged?
+
+Answer: Yes.
+
+Q96. What should be logged?
+
+Important actions include:
+
+BILL_GENERATED
+PAYMENT_RECEIVED
+PAYMENT_FAILED
+PENALTY_WAIVED
+RATE_CHANGED
+MEMBER_DEACTIVATED
+OWNERSHIP_CHANGED
+Q97. What should AuditLog contain?
+AuditLog
+----------------
+id
+user
+action
+entity
+entityId
+timestamp
+oldValue
+newValue
+reason
+
+Not every field needs to be populated for every action.
+
+20. Notifications
+Q98. Which notifications are required in V1?
+
+Answer: In-app notifications can be implemented.
+
+Q99. Do we need Email/SMS/WhatsApp?
+
+Answer: No, not in V1.
+
+Future:
+
+Bill Generated
+Due Reminder
+Overdue Reminder
+Payment Successful
+Payment Failed
+21. Security
+Q100. Should APIs require authentication?
+
+Answer: Yes, wherever the operation involves protected society/member data.
+
+Q101. Can Members see another Member's data?
+
+Answer: No.
+
+Q102. Can Members see another Member's bills by changing an ID?
+
+Answer: No.
+
+Authorization must be checked by the backend.
+
+Q103. Can Admin see everything?
+
+Answer: Admin has society-wide access according to their role.
+
+22. Database
+Q104. Which database?
+
+Answer:
+
+PostgreSQL
+Q105. Which ORM?
+
+Answer:
+
+Spring Data JPA / Hibernate
+Q106. Money datatype?
+
+Answer:
+
+BigDecimal
+Q107. Sqft datatype?
+
+Answer:
+
+BigDecimal
+Q108. Should important business constraints be enforced by the database?
+
+Answer: Yes.
+
+Especially:
+
+Flat + Month + Year
+
+for duplicate maintenance prevention.
+
+Q109. Should payment operations be transactional?
+
+Answer: Yes.
+
+Q110. Should monthly bill generation be transactional?
+
+Answer: Yes.
+
+23. Final Entity List
+
+The expected V1 entities are:
+
+1. Society
+2. Wing
+3. Flat
+4. User
+5. Role
+6. Member
+7. Vehicle
+8. Maintenance
+9. Payment
+10. MaintenanceRate
+11. PenaltyRule
+12. AuditLog
+
+Potential future entity:
+
+FlatOwnershipHistory
+24. Final Entity Relationships
+
+The high-level relationship will be:
+
+Society
+   |
+   +---- Wing
+            |
+            +---- Flat
+                    |
+                    +---- Member (Owner)
+                            |
+                            +---- Vehicle
+
+
+User
+   |
+   +---- Member
+
+
+Flat
+   |
+   +---- Maintenance
+              |
+              +---- Payment
+
+Configuration:
+
+MaintenanceRate
+PenaltyRule
+
+Audit:
+
+AuditLog
+25. V1 Explicitly Excluded
+
+To prevent scope creep, these are not V1 requirements:
+
+❌ Tenant Management
+❌ Flat Occupancy Status
+❌ Joint Ownership
+❌ Company-Owned Flats
+❌ Partial Payments
+❌ Advance Payments
+❌ Pay Multiple Bills Together
+❌ Offline Payments
+❌ Parking Management
+❌ Vehicle Status
+❌ SMS
+❌ WhatsApp
+❌ Email Notifications
+❌ SUPER_ADMIN
+❌ Complex Holiday/Weekend Due-Date Rules
+❌ Full Accounting/Ledger
+❌ Expense Management
+❌ Visitor Management
+❌ Complaint Management
+❌ Staff Management
+❌ Vendor Management
+❌ Mobile Application
+❌ Full Ownership History
+
+These can be considered V2/V3.
+
+26. Final Monthly Flow
+
+The most important business flow is:
+
+                 1st of Month
+                      |
+                      ↓
+              Generate Maintenance
+                      |
+                      ↓
+              Flat Area × Rate
+                      |
+                      ↓
+                  Bill Created
+                      |
+                      ↓
+              Due Date = 15th
+                      |
+          ┌───────────┴───────────┐
+          ↓                       ↓
+      Paid ≤ 15th            Not Paid
+          ↓                       ↓
+       ₹1,950                16th onward
+                                  ↓
+                            + ₹100 Penalty
+                                  ↓
+                             ₹2,050 Due
+                                  |
+                                  ↓
+                             Razorpay
+                                  |
+                                  ↓
+                         Backend Verification
+                                  |
+                                  ↓
+                         Payment Successful
+                                  |
+                    ┌─────────────┴─────────────┐
+                    ↓                           ↓
+              Bill = PAID                Receipt Generated
+27. Final Project Architecture
+
+The project is ultimately moving toward:
+
+                    Society
+                       |
+                     Wing
+                       |
+                     Flat
+                       |
+                    Member
+                   /      \
+                User     Vehicle
+                  |
+                Role
+
+
+
+
+Flat
+ |
+ +---- Maintenance
+           |
+           +---- Payment
+                    |
+                  Razorpay
+
+
+
+
+MaintenanceRate
+PenaltyRule
+AuditLog
+28. Development Order
+
+We should follow this order so that we don't repeatedly redesign the entities:
+
+Phase 1 — Society
+Society Entity
+DTO
+Repository
+Service
+Controller
+Phase 2 — Wing
+Wing Entity
+DTO
+Repository
+Service
+Controller
+Phase 3 — Flat
+
+You have already started this.
+
+Flat Entity
+Flat DTO
+Flat Repository
+Flat Service
+Flat Controller
+Phase 4 — User & Role
+
+Your User module already exists.
+
+We'll verify and complete it.
+
+Phase 5 — Member
+
+This is our next step.
+
+Member Entity
+Member DTO
+Member Repository
+Member Service
+Member Controller
+Phase 6 — Vehicle
+Vehicle Entity
+Vehicle DTO
+Vehicle Repository
+Vehicle Service
+Vehicle Controller
+Phase 7 — Maintenance Configuration
+MaintenanceRate
+PenaltyRule
+Phase 8 — Maintenance
+Maintenance Entity
+Bill Generation
+Due Date
+Late Fee
+Outstanding
+Phase 9 — Payment
+Payment
+Razorpay
+Webhook
+Payment Verification
+Receipt
+Phase 10 — Reports
+Monthly Collection
+Outstanding
+Payment History
+Penalty
+Maintenance
+Excel Export
+Phase 11 — Audit
+AuditLog
+Phase 12 — Security
+Spring Security
+JWT
+ADMIN
+MEMBER
+Authorization
+🔒 V1 Baseline
+
+From this point onward, I recommend treating the above as our V1 baseline.
+
+If we later discover a requirement such as "we also need tenants" or "members should be able to pay multiple bills together", we should not silently modify the V1 design. We'll mark it as a new requirement and decide whether it belongs in V2.
+
+And for your immediate work, we should now stop changing the Flat module and move to the Member module, because Member is required to properly test the Flat owner relationship and your earlier Owner not found issue.
+
+One small design note: I would keep the existing FlatStatus out of the V1 response/entity if you've decided it is unnecessary, rather than carrying unused business concepts around.

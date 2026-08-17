@@ -12,8 +12,9 @@ public class FlatResponseDTO {
 
     private Long id;
     private String flatNumber;
-    private BigDecimal maintenanceCost;
     private BigDecimal flatSqft;
     private Long wingId;
     private String wingName;
+    private Long ownerId;
+    private String ownerName;
 }

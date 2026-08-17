@@ -44,8 +44,8 @@ public class FlatController {
 
     //Delete by ID
     @DeleteMapping("/{flatId}")
-    public void deleteFlatById(@PathVariable Long flatId) {
-        flatService.deleteFlat(flatId);
+    public String deleteFlatById(@PathVariable Long flatId) {
+        return flatService.deleteFlat(flatId);
     }
 
     //Update flat by ID

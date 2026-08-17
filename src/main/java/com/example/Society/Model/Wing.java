@@ -31,7 +31,7 @@ public class Wing extends BaseModel{
     private Society society;
 
     //One wing can contain multiple flats
-    @OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "wing", fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     private List<Flat>  flats;
 
 }
