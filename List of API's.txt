@@ -31,3 +31,18 @@ GET /api/members/{memberId}
 PUT /api/members/{memberId}
 DELETE /api/members/{memberId}
 GET /api/members/flat/{flatId}
+
+
+This is for Resume.
+
+Society Maintenance & Payment Management System
+Developed a Spring Boot-based backend application to automate monthly maintenance billing, payment tracking, late-penalty calculation, outstanding dues, and society-level collection reporting for a 35-flat residential society.
+
+Then your technical bullets can become:
+
+Designed REST APIs using Java, Spring Boot, Spring Data JPA and PostgreSQL for society, wing, flat, member, maintenance and payment management.
+Automated monthly maintenance calculation based on flat area × configurable per-square-foot maintenance rate.
+Implemented monthly billing, due-date tracking, late-payment penalties and flat-wise outstanding balance calculation.
+Developed role-based access for society administrators and members, enabling members to view bills/payment history and administrators to monitor collections.
+Built reporting workflows for monthly collection, pending dues, payment history and audit reconciliation.
+Designed relational entity mappings between Society → Wing → Flat → Member → Maintenance → Payment.

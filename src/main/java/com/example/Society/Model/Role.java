@@ -2,6 +2,11 @@ package com.example.Society.Model;
 
 import com.example.Society.Config.RoleName;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 
 @Entity
 @Table(name = "roles")
@@ -11,21 +16,7 @@ public class Role extends BaseModel{
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    private RoleName roleName;
+    @Column(nullable = false, unique = true)
+    private RoleName name;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public RoleName getRoleName() {
-        return roleName;
-    }
-
-    public void setRoleName(RoleName roleName) {
-        this.roleName = roleName;
-    }
 }
