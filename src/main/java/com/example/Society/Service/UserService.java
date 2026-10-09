@@ -2,6 +2,8 @@ package com.example.Society.Service;
 
 import com.example.Society.DTO.UserRequestDTO;
 import com.example.Society.DTO.UserResponseDTO;
+import com.example.Society.Exception.DuplicateUserException;
+import com.example.Society.Exception.UserNotFoundException;
 import com.example.Society.Model.User;
 import com.example.Society.Repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -39,10 +41,18 @@ public class UserService {
     public UserResponseDTO createUser( UserRequestDTO userRequestDTO) {
         User user = new User();
 
-        user.setUsername(userRequestDTO.getUsername());
-        user.setPassword(passwordEncoder.encode(userRequestDTO.getPassword()));
-        user.setEmail(userRequestDTO.getEmail());
+        if (userRepository.existsByUsername(userRequestDTO.getUsername())) {
+            throw new DuplicateUserException(
+                    "Username already exists: " + userRequestDTO.getUsername()
+            );
+        }
 
+        if (userRepository.existsByEmail(userRequestDTO.getEmail())) {
+            throw new DuplicateUserException(
+                    "Email already exists: " + userRequestDTO.getEmail()
+            );
+        }
+        user.setPassword(passwordEncoder.encode(userRequestDTO.getPassword()));
         User savedUser = userRepository.save(user);
 
         return convertoUserResponseDTO(savedUser);
@@ -57,7 +67,7 @@ public class UserService {
     // Get user by id
 
     public UserResponseDTO getUser(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(()-> new RuntimeException("User not found"));
+        User user = userRepository.findById(userId).orElseThrow(()-> new UserNotFoundException("User not found with id: " + userId));
 
         return convertoUserResponseDTO(user);
     }
@@ -65,7 +75,7 @@ public class UserService {
     // Update user
 
     public UserResponseDTO updateUser(Long userId, UserRequestDTO userRequestDTO) {
-        User user = userRepository.findById(userId).orElseThrow(()-> new RuntimeException("User not found"));
+        User user = userRepository.findById(userId).orElseThrow(()-> new UserNotFoundException("User not found with id: " + userId));
 
         user.setUsername(userRequestDTO.getUsername());
         user.setEmail(userRequestDTO.getEmail());
@@ -79,7 +89,7 @@ public class UserService {
     // Delete user
 
     public String deleteUser(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(()-> new RuntimeException("User not found"));
+        User user = userRepository.findById(userId).orElseThrow(()-> new UserNotFoundException("User not found with id: " + userId));
         userRepository.delete(user);
         return "User has been deleted";
     }
