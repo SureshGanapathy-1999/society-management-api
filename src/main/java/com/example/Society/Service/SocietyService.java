@@ -2,6 +2,8 @@ package com.example.Society.Service;
 
 import com.example.Society.DTO.SocietyRequestDTO;
 import com.example.Society.DTO.SocietyResponseDTO;
+import com.example.Society.Exception.DuplicateResourceException;
+import com.example.Society.Exception.ResourceNotFoundException;
 import com.example.Society.Model.Society;
 import com.example.Society.Repository.SocietyRepository;
 import org.springframework.stereotype.Service;
@@ -54,14 +56,16 @@ public class SocietyService {
 
     public SocietyResponseDTO create(SocietyRequestDTO societyRequestDTO) {
 
-        // Create a new Society entity
+        if (repository.existsBySocietyCode(societyRequestDTO.getSocietyCode())) {
+            throw new DuplicateResourceException(
+                    "Society code already exists: " + societyRequestDTO.getSocietyCode()
+            );
+        }
+
         Society society = mapToEntity(societyRequestDTO);
 
-        // Save the Society entity into the database
-        // The database generates the Society ID
         Society savedSociety = repository.save(society);
 
-        // Return the Response DTO to the Controller
         return mapToResponseDTO(savedSociety);
     }
 
@@ -80,7 +84,7 @@ public class SocietyService {
 
     // Get by ID
     public SocietyResponseDTO findById(long id) {
-        Society  society = repository.findById(id).orElseThrow(()-> new RuntimeException("Society Not Found"));
+        Society  society = repository.findById(id).orElseThrow(()-> new ResourceNotFoundException("Society Not Found with id: " + id));
 
         return mapToResponseDTO(society);
     }
@@ -90,7 +94,7 @@ public class SocietyService {
     // Find the existing Society using the provided ID
     // If it does not exist, throw an exception
     public SocietyResponseDTO update(long id, SocietyRequestDTO updated) {
-        Society society = repository.findById(id).orElseThrow(() -> new RuntimeException("Society Not Found"));
+        Society society = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Society Not Found with id: " + id));
 
         // Update the editable Society details
         society.setSocietyName(updated.getSocietyName());
@@ -113,7 +117,7 @@ public class SocietyService {
     // Find the Society before deleting it
     // This ensures we return an error if the Society does not exist
     public void delete(long id){
-        Society society = repository.findById(id).orElseThrow(() -> new RuntimeException("Society Not Found"));
+        Society society = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Society Not Found with id: " + id));
 
         // Delete the Society from the database
         repository.delete(society);

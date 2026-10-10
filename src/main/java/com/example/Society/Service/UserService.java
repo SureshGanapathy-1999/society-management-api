@@ -52,6 +52,9 @@ public class UserService {
                     "Email already exists: " + userRequestDTO.getEmail()
             );
         }
+
+        user.setUsername(userRequestDTO.getUsername());
+        user.setEmail(userRequestDTO.getEmail());
         user.setPassword(passwordEncoder.encode(userRequestDTO.getPassword()));
         User savedUser = userRepository.save(user);
 
@@ -76,6 +79,23 @@ public class UserService {
 
     public UserResponseDTO updateUser(Long userId, UserRequestDTO userRequestDTO) {
         User user = userRepository.findById(userId).orElseThrow(()-> new UserNotFoundException("User not found with id: " + userId));
+
+        if (userRepository.existsByUsername(userRequestDTO.getUsername())
+                && !user.getUsername().equals(userRequestDTO.getUsername())) {
+
+            throw new DuplicateUserException(
+                    "Username already exists: " + userRequestDTO.getUsername()
+            );
+        }
+
+        if (userRepository.existsByEmail(userRequestDTO.getEmail())
+                && !user.getEmail().equals(userRequestDTO.getEmail())) {
+
+            throw new DuplicateUserException(
+                    "Email already exists: " + userRequestDTO.getEmail()
+            );
+        }
+
 
         user.setUsername(userRequestDTO.getUsername());
         user.setEmail(userRequestDTO.getEmail());

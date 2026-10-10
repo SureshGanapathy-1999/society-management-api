@@ -2,11 +2,14 @@ package com.example.Society.Exception;
 
 import com.example.Society.DTO.ErrorResponseJson;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import com.example.Society.Exception.ResourceNotFoundException;
+import com.example.Society.Exception.DuplicateResourceException;
 
 import java.util.stream.Collectors;
 
@@ -44,6 +47,44 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(DuplicateUserException.class)
     public ResponseEntity<ErrorResponseJson> handleDuplicateUserException(DuplicateUserException exception, HttpServletRequest request) {
+
+        ErrorResponseJson responseJson = new ErrorResponseJson(
+                HttpStatus.CONFLICT.value(), HttpStatus.CONFLICT.getReasonPhrase(),
+                exception.getMessage(),
+                request.getRequestURI()
+        );
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(responseJson);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorResponseJson> handleDataIntegrityViolationException(DataIntegrityViolationException exception,  HttpServletRequest request) {
+
+        ErrorResponseJson responseJson = new ErrorResponseJson(
+                HttpStatus.CONTINUE.value(),
+                HttpStatus.CONFLICT.getReasonPhrase(),
+                "The request conflicts with existing data or a database constraint.",
+                request.getRequestURI()
+        );
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(responseJson);
+    }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ErrorResponseJson> handleResourceNotFoundException(ResourceNotFoundException exception, HttpServletRequest request) {
+
+        ErrorResponseJson responseJson = new ErrorResponseJson(
+                HttpStatus.NOT_FOUND.value(),
+                HttpStatus.NOT_FOUND.getReasonPhrase(),
+                exception.getMessage(),
+                request.getRequestURI()
+        );
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseJson);
+    }
+
+    @ExceptionHandler(DuplicateResourceException.class)
+    public ResponseEntity<ErrorResponseJson> handleDuplicateResourceException(DuplicateResourceException exception, HttpServletRequest request) {
 
         ErrorResponseJson responseJson = new ErrorResponseJson(
                 HttpStatus.CONFLICT.value(), HttpStatus.CONFLICT.getReasonPhrase(),
