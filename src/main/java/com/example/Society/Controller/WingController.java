@@ -4,6 +4,7 @@ import com.example.Society.DTO.WingRequestDTO;
 import com.example.Society.DTO.WingResponseDTO;
 import com.example.Society.Service.WingService;
 import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -38,7 +39,18 @@ public class WingController {
 
     //Delete Wing
     @DeleteMapping("/{id}")
-    public void deleteById(@PathVariable Long id){
+    public ResponseEntity<String> deleteById(@PathVariable Long id){
+
         service.delete(id);
+
+        return ResponseEntity.ok("Successfully deleted Wing with id: "+id);
+    }
+
+    // Update wing
+    @PutMapping("/{id}")
+    public WingResponseDTO update(
+            @PathVariable Long id,
+            @Valid @RequestBody WingRequestDTO wingRequestDTO) {
+        return service.update(id, wingRequestDTO);
     }
 }

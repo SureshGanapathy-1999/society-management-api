@@ -4,6 +4,7 @@ import com.example.Society.DTO.SocietyRequestDTO;
 import com.example.Society.DTO.SocietyResponseDTO;
 import com.example.Society.Service.SocietyService;
 import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -44,8 +45,11 @@ public class SocietyController {
     //Delete
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable long id) {
+    public ResponseEntity<String> delete(@PathVariable long id) {
+
         service.delete(id);
+
+        return ResponseEntity.ok("Society has been deleted with id: " + id );
     }
 
 }

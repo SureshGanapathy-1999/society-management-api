@@ -2,6 +2,8 @@ package com.example.Society.Service;
 
 import com.example.Society.DTO.WingRequestDTO;
 import com.example.Society.DTO.WingResponseDTO;
+import com.example.Society.Exception.DuplicateResourceException;
+import com.example.Society.Exception.ResourceNotFoundException;
 import com.example.Society.Model.Society;
 import com.example.Society.Model.Wing;
 import com.example.Society.Repository.SocietyRepository;
@@ -24,11 +26,21 @@ public class WingService {
     //Create wing
     public WingResponseDTO addWingToSociety(Long societyId , WingRequestDTO wingRequestDTO){
 
-        Society society = societyRepository.findById(societyId).orElseThrow(() -> new RuntimeException("society not found"));
+        Society society = societyRepository.findById(societyId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "society not found with id: " + societyId));
+
+        String wingName = wingRequestDTO.getWingName().trim();
+
+        if(repository.existsBySocietyIdAndWingName(societyId, wingName)){
+            throw new DuplicateResourceException(
+                    "Wing name already exists in society " + wingName
+            );
+        }
 
         Wing newWing = new Wing();
 
-        newWing.setWingName(wingRequestDTO.getWingName());
+        newWing.setWingName(wingName);
         newWing.setSociety(society);
 
         Wing savedWing = repository.save(newWing);
@@ -45,7 +57,7 @@ public class WingService {
     //Get By ID
     public WingResponseDTO getById(Long id) {
 
-        Wing wing = repository.findById(id).orElseThrow( () -> new RuntimeException("Wing not found") );
+        Wing wing = repository.findById(id).orElseThrow( () -> new ResourceNotFoundException("Wing not found with id: " + id ) );
 
         return convertTOResponseDTO(wing);
     }
@@ -53,10 +65,35 @@ public class WingService {
     //Delete
     public void delete(Long id) {
         Wing wing = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Wing not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Wing not found with id: " + id ) );
 
         repository.delete(wing);
     }
+
+
+    // Update Wing
+    public WingResponseDTO update(Long id, WingRequestDTO wingRequestDTO) {
+
+        Wing wing = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Wing not found with id: " + id));
+
+        String wingName = wingRequestDTO.getWingName().trim();
+        Long societyId = wing.getSociety().getId();
+
+        if (!wing.getWingName().equals(wingName)
+                && repository.existsBySocietyIdAndWingName(societyId, wingName)) {
+            throw new DuplicateResourceException(
+                    "Wing name already exists in society: " + wingName);
+        }
+
+        wing.setWingName(wingName);
+
+        Wing updatedWing = repository.save(wing);
+
+        return convertTOResponseDTO(updatedWing);
+    }
+
 
     // Converting Entity into Response DTO
     private WingResponseDTO convertTOResponseDTO(Wing wing){
