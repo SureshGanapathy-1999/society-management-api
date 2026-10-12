@@ -2,6 +2,8 @@ package com.example.Society.Service;
 
 import com.example.Society.DTO.FlatRequestDTO;
 import com.example.Society.DTO.FlatResponseDTO;
+import com.example.Society.Exception.DuplicateResourceException;
+import com.example.Society.Exception.ResourceNotFoundException;
 import com.example.Society.Model.Flat;
 import com.example.Society.Model.Member;
 import com.example.Society.Model.Wing;
@@ -29,11 +31,18 @@ public class FlatService {
     //create flat inside wing
 
     public FlatResponseDTO createFlat(Long wingId, FlatRequestDTO flatRequestDTO) {
-        Wing wing = wingRepository.findById(wingId).orElseThrow(() -> new RuntimeException("Wing not found"));
+        Wing wing = wingRepository.findById(wingId).orElseThrow(() -> new ResourceNotFoundException("Wing not found with id " + wingId));
+
+        String flatNumber = flatRequestDTO.getFlatNumber().trim();
+
+        if (repository.existsByWingIdAndFlatNumber(wingId, flatNumber)) {
+            throw new DuplicateResourceException(
+                    "Flat number already exists in this wing: " + flatNumber);
+        }
 
         Flat flat = new Flat();
 
-        flat.setFlatNumber(flatRequestDTO.getFlatNumber());
+        flat.setFlatNumber(flatNumber);
         flat.setFlatSqft(flatRequestDTO.getFlatSqft());
         flat.setWing(wing);
 
@@ -41,7 +50,7 @@ public class FlatService {
         if (flatRequestDTO.getOwnerId() != null) {
 
             Member owner = memberRepository.findById(flatRequestDTO.getOwnerId())
-                    .orElseThrow(() -> new RuntimeException("Owner not found"));
+                    .orElseThrow(() -> new ResourceNotFoundException("Owner not found  with id " + flatRequestDTO.getOwnerId()));
 
             flat.setOwner(owner);
         }
@@ -54,40 +63,55 @@ public class FlatService {
 
     // Get all flats
     public List<FlatResponseDTO> getAllFlats(){
+
         return repository.findAll().stream().map(this::convertToFlatResponseDTO).toList();
     }
 
     // get Flat by ID
     public FlatResponseDTO getFlatById(Long flatId) {
-        Flat flat = repository.findById(flatId).orElseThrow(() -> new RuntimeException("Flat not found"));
+        Flat flat = repository.findById(flatId).orElseThrow(() -> new ResourceNotFoundException("Flat not found with id " + flatId));
 
         return convertToFlatResponseDTO(flat);
     }
 
-
+    // Get all flats in a Wing
     public List<FlatResponseDTO> getFlatsByWing(Long wingId) {
+
+        wingRepository.findById(wingId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Wing not found with id: " + wingId));
+
         return repository.findByWingId(wingId).stream().map(this::convertToFlatResponseDTO).toList();
 
     }
 
     public String deleteFlat(Long flatId) {
-        Flat flat = repository.findById(flatId).orElseThrow(() -> new RuntimeException("Flat not found"));
+        Flat flat = repository.findById(flatId).orElseThrow(() -> new ResourceNotFoundException("Flat not found with id " + flatId));
 
         repository.deleteById(flatId);
         return "Flat Deleted Successfully";
     }
 
     public FlatResponseDTO updateFlatInfo(Long flatId, FlatRequestDTO updatedFlat) {
-        Flat flat = repository.findById(flatId).orElseThrow(() -> new RuntimeException("Flat not found"));
+        Flat flat = repository.findById(flatId).orElseThrow(() -> new ResourceNotFoundException("Flat not found with id " + flatId));
 
-        flat.setFlatNumber(updatedFlat.getFlatNumber());
+        String flatNumber = updatedFlat.getFlatNumber().trim();
+        Long wingId = flat.getWing().getId();
+
+        if (!flat.getFlatNumber().equals(flatNumber)
+                && repository.existsByWingIdAndFlatNumber(wingId, flatNumber)) {
+            throw new DuplicateResourceException(
+                    "Flat number already exists in this wing: " + flatNumber);
+        }
+
+        flat.setFlatNumber(flatNumber);
         flat.setFlatSqft(updatedFlat.getFlatSqft());
 
         // Update owner if ownerId is provided
         if (updatedFlat.getOwnerId() != null) {
 
             Member owner = memberRepository.findById(updatedFlat.getOwnerId())
-                    .orElseThrow(() -> new RuntimeException("Owner not found"));
+                    .orElseThrow(() -> new ResourceNotFoundException("Owner not found with id " + updatedFlat.getOwnerId()));
 
             flat.setOwner(owner);
         } else {

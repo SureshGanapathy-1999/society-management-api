@@ -17,7 +17,8 @@ public class FlatRequestDTO {
     @NotBlank
     private String flatNumber;
 
-    @Positive
+    @NotNull(message = "Flat Sq.Ft is required")
+    @Positive(message = "Flat Sq.Ft must be greater than zero")
     private BigDecimal flatSqft;
 
     private Long ownerId;
