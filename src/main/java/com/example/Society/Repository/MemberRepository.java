@@ -13,4 +13,7 @@ public interface MemberRepository extends JpaRepository<Member,Long> {
 
     Optional <Member> findByFlatsContaining(Flat flat);
 
+    boolean existsByMobileNumber(String mobileNumber);
+
+
 }

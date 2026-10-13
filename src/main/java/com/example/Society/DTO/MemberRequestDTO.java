@@ -13,6 +13,7 @@ public class MemberRequestDTO {
 
     private String lastName;
 
+    @NotBlank(message = "Mobile number is required")
     @Pattern(
             regexp = "^[6-9]\\d{9}$",
             message = "Invalid mobile number"
