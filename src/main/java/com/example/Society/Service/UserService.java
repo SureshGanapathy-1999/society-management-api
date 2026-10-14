@@ -3,8 +3,11 @@ package com.example.Society.Service;
 import com.example.Society.DTO.UserRequestDTO;
 import com.example.Society.DTO.UserResponseDTO;
 import com.example.Society.Exception.DuplicateUserException;
+import com.example.Society.Exception.ResourceNotFoundException;
 import com.example.Society.Exception.UserNotFoundException;
+import com.example.Society.Model.Role;
 import com.example.Society.Model.User;
+import com.example.Society.Repository.RoleRepository;
 import com.example.Society.Repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -16,10 +19,12 @@ public class UserService {
 
     private UserRepository userRepository;
     private PasswordEncoder passwordEncoder;
+    private RoleRepository roleRepository;
 
-    public UserService(UserRepository userRepository,  PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository,  PasswordEncoder passwordEncoder, RoleRepository roleRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.roleRepository = roleRepository;
     }
 
     // converting to user response
@@ -53,8 +58,13 @@ public class UserService {
             );
         }
 
+        Role role = roleRepository.findByName(userRequestDTO.getRole()).
+                orElseThrow( () -> new ResourceNotFoundException("Role not found" + userRequestDTO.getRole()));
+
+
         user.setUsername(userRequestDTO.getUsername());
         user.setEmail(userRequestDTO.getEmail());
+        user.setRole(role);
         user.setPassword(passwordEncoder.encode(userRequestDTO.getPassword()));
         User savedUser = userRepository.save(user);
 
@@ -96,9 +106,12 @@ public class UserService {
             );
         }
 
+        Role role = roleRepository.findByName(userRequestDTO.getRole()).
+                orElseThrow( () -> new ResourceNotFoundException("Role not found" + userRequestDTO.getRole()));
 
         user.setUsername(userRequestDTO.getUsername());
         user.setEmail(userRequestDTO.getEmail());
+        user.setRole(role);
         user.setPassword(passwordEncoder.encode(userRequestDTO.getPassword()));
 
         User savedUser = userRepository.save(user);
