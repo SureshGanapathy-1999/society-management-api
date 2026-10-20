@@ -1,25 +1,45 @@
 package com.example.Society.Config;
 
-import org.springframework.boot.health.application.DiskSpaceHealthIndicator;
+import com.example.Society.Service.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.server.SecurityWebFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 public class SecurityConfig {
 
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+
+    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
+        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+    }
+
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(
+            HttpSecurity http,
+            DaoAuthenticationProvider daoAuthenticationProvider) throws Exception {
 
         http
                 .csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll()
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
+                .authenticationProvider(daoAuthenticationProvider)
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/auth/login").permitAll()
+                        .requestMatchers("/api/user/**").hasRole("ADMIN").anyRequest().authenticated()
+                ).exceptionHandling(exception -> exception
+                        .authenticationEntryPoint(((request, response, authException) ->
+                                response.sendError(jakarta.servlet.http.HttpServletResponse.SC_UNAUTHORIZED))
+                        )
+                )
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .httpBasic(basic -> basic.disable())
                 .formLogin(form -> form.disable());
 
@@ -28,7 +48,16 @@ public class SecurityConfig {
 
     @Bean
     public AuthenticationManager authenticationManager(
-            AuthenticationConfiguration configuration) throws Exception {
-        return configuration.getAuthenticationManager();
+            DaoAuthenticationProvider daoAuthenticationProvider){
+        return new  org.springframework.security.authentication.ProviderManager(daoAuthenticationProvider);
+    }
+
+    @Bean
+    public DaoAuthenticationProvider daoAuthenticationProvider(
+            CustomUserDetailsService userDetailsService, PasswordEncoder passwordEncoder){
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider(userDetailsService);
+        provider.setPasswordEncoder(passwordEncoder);
+
+        return provider;
     }
 }

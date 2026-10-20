@@ -79,6 +79,29 @@
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
 
+        <!-- Create and parse JWT tokens -->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-api</artifactId>
+            <version>0.12.6</version>
+        </dependency>
+
+        <!-- JWT implementation at runtime -->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-impl</artifactId>
+            <version>0.12.6</version>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- JSON processing for JWT claims -->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-jackson</artifactId>
+            <version>0.12.6</version>
+            <scope>runtime</scope>
+        </dependency>
+
     </dependencies>
 
 
