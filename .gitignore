@@ -4,6 +4,10 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+# Ignore Spring Boot application properties
+**/application.properties
+**/application-*.properties
+
 ### STS ###
 .apt_generated
 .classpath
