@@ -32,12 +32,13 @@ public class SecurityConfig {
                 )
                 .authenticationProvider(daoAuthenticationProvider)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/login").permitAll()
+                        .requestMatchers("/api/auth/login", "/error").permitAll()
                         .requestMatchers("/api/user/**").hasRole("ADMIN").anyRequest().authenticated()
                 ).exceptionHandling(exception -> exception
                         .authenticationEntryPoint(((request, response, authException) ->
                                 response.sendError(jakarta.servlet.http.HttpServletResponse.SC_UNAUTHORIZED))
-                        )
+                        ).accessDeniedHandler((request, response, accessDeniedException) ->
+                                response.sendError(jakarta.servlet.http.HttpServletResponse.SC_FORBIDDEN))
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .httpBasic(basic -> basic.disable())
