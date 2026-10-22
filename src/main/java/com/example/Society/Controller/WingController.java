@@ -5,6 +5,7 @@ import com.example.Society.DTO.WingResponseDTO;
 import com.example.Society.Service.WingService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,24 +21,28 @@ public class WingController {
     }
 
     //Create wing for society
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/society/{societyId}")
     public WingResponseDTO addWingToSociety(@PathVariable Long societyId, @Valid @RequestBody WingRequestDTO wingRequestDTO){
         return service.addWingToSociety(societyId,wingRequestDTO);
     }
 
     //Get All
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public List<WingResponseDTO> getAll() {
         return service.getAll();
     }
 
     //Get By ID
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}")
     public WingResponseDTO getById(@PathVariable Long id){
         return service.getById(id);
     }
 
     //Delete Wing
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteById(@PathVariable Long id){
 
@@ -47,6 +52,7 @@ public class WingController {
     }
 
     // Update wing
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public WingResponseDTO update(
             @PathVariable Long id,

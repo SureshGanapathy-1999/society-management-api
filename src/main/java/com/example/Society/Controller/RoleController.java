@@ -2,6 +2,7 @@ package com.example.Society.Controller;
 import com.example.Society.Config.RoleName;
 import com.example.Society.DTO.RoleResponseDTO;
 import com.example.Society.Service.RoleService;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -22,6 +23,7 @@ public class RoleController {
     }
 
     // Create role
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public RoleResponseDTO createRole(@RequestParam RoleName name) {
         return roleService.createRole(name);
