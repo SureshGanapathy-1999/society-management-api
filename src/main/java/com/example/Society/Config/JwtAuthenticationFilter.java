@@ -37,9 +37,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String header = request.getHeader("Authorization");
 
-        System.out.println("JWT filter request: " + request.getRequestURI());
-        System.out.println("Authorization header present: " + (header != null));
-
         if(header == null || !header.startsWith("Bearer ")){
             filterChain.doFilter(request, response);
             return;
@@ -48,7 +45,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
             String token = header.substring(7);
             String username = jwtService.extractUsername(token);
-            System.out.println("JWT username extracted: " + username);
 
             if(username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
@@ -70,7 +66,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         }
         catch (JwtException | IllegalArgumentException | UsernameNotFoundException ex) {
-            System.out.println("JWT authentication failed :" +  ex.getMessage());
             SecurityContextHolder.clearContext();
         }
 
