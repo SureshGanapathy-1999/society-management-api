@@ -48,15 +48,10 @@ public class Maintenance extends BaseModel {
     private MaintenanceStatus maintenanceStatus;
     private LocalDateTime generatedAt;
 
-    public void prePersist() {
-        if (maintenanceStatus == null) {
-            maintenanceStatus = MaintenanceStatus.GENERATED;
-        }
-        if (lateFee == null) {
-            lateFee = BigDecimal.ZERO;
-        }
+    public Maintenance() {
+        this.lateFee = BigDecimal.ZERO;
+        this.maintenanceStatus = MaintenanceStatus.GENERATED;
     }
-
 
     //Getters and Setters
 
