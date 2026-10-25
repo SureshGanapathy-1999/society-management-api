@@ -1,10 +1,10 @@
 package com.example.Society.Controller;
 
+import com.example.Society.DTO.MaintenanceRequestDTO;
 import com.example.Society.DTO.MaintenanceResponseDTO;
 import com.example.Society.Service.MaintenanceService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -21,5 +21,10 @@ public class MaintenanceController {
     @GetMapping
     public List<MaintenanceResponseDTO> getAllMaintenance(){
         return maintenanceService.getAllMaintenanceBills();
+    }
+
+    @PostMapping
+    public MaintenanceResponseDTO createMaintenanceBill(@Valid @RequestBody MaintenanceRequestDTO maintenanceRequestDTO){
+        return maintenanceService.createMaintenanceBill(maintenanceRequestDTO);
     }
 }

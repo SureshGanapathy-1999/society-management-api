@@ -7,5 +7,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface MaintenanceRepository extends JpaRepository<Maintenance, Long> {
 
-    boolean existsByFlatIdAndBillNumberAndBillYear(Long flatId,Integer billNumber,Integer billYear);
+    boolean existsByFlatIdAndBillMonthAndBillYear(Long flatId,Integer billMonth,Integer billYear);
 }

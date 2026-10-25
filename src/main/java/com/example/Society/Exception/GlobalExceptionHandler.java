@@ -8,9 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import com.example.Society.Exception.ResourceNotFoundException;
-import com.example.Society.Exception.DuplicateResourceException;
-
 import java.util.stream.Collectors;
 
 @RestControllerAdvice
@@ -61,7 +58,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponseJson> handleDataIntegrityViolationException(DataIntegrityViolationException exception,  HttpServletRequest request) {
 
         ErrorResponseJson responseJson = new ErrorResponseJson(
-                HttpStatus.CONTINUE.value(),
+                HttpStatus.CONFLICT.value(),
                 HttpStatus.CONFLICT.getReasonPhrase(),
                 "The request conflicts with existing data or a database constraint.",
                 request.getRequestURI()
@@ -88,6 +85,19 @@ public class GlobalExceptionHandler {
 
         ErrorResponseJson responseJson = new ErrorResponseJson(
                 HttpStatus.CONFLICT.value(), HttpStatus.CONFLICT.getReasonPhrase(),
+                exception.getMessage(),
+                request.getRequestURI()
+        );
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(responseJson);
+    }
+
+    @ExceptionHandler(DuplicateMaintenanceBillException.class)
+    public ResponseEntity<ErrorResponseJson> handleDuplicateMaintenanceBill(DuplicateMaintenanceBillException exception, HttpServletRequest request) {
+
+        ErrorResponseJson responseJson = new ErrorResponseJson(
+                HttpStatus.CONFLICT.value(),
+                HttpStatus.CONFLICT.getReasonPhrase(),
                 exception.getMessage(),
                 request.getRequestURI()
         );
