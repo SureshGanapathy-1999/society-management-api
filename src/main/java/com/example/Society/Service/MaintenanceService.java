@@ -40,7 +40,7 @@ public class MaintenanceService {
         List<Maintenance> maintenanceList =  maintenanceRepository.findAll();
 
         return maintenanceList.stream()
-                .map(this::convertoDTO)
+                .map(this::convertDTO)
                 .toList();
     }
 
@@ -62,7 +62,6 @@ public class MaintenanceService {
 
         BigDecimal ratePerSqft = new BigDecimal("3");
 
-
         BigDecimal maintenanceCost  = flat.getFlatSqft().multiply(ratePerSqft);
 
         Maintenance maintenance = new Maintenance();
@@ -76,14 +75,14 @@ public class MaintenanceService {
         maintenance.setDueDate(LocalDate.of(maintenanceRequestDTO.getBillYear(),
                         maintenanceRequestDTO.getBillMonth(),
                         15));
-        maintenance.setMaintenanceStatus(MaintenanceStatus.GENERATED);
+        maintenance.setMaintenanceStatus(MaintenanceStatus.PENDING);
         maintenance.setGeneratedAt(LocalDateTime.now());
         maintenance.setBillNumber(
                 "MB-" + UUID.randomUUID().toString().substring(0,8));
 
         Maintenance savedMaintenance = maintenanceRepository.save(maintenance);
 
-        return convertoDTO(savedMaintenance);
+        return convertDTO(savedMaintenance);
     }
 
     @Transactional
@@ -123,7 +122,7 @@ public class MaintenanceService {
                     "MB-" + UUID.randomUUID().toString().substring(0,8)
             );
             Maintenance savedMaintenance = maintenanceRepository.save(maintenance);
-            generatedBills.add(convertoDTO(savedMaintenance));
+            generatedBills.add(convertDTO(savedMaintenance));
         }
 
         return generatedBills;
@@ -182,7 +181,7 @@ public class MaintenanceService {
         return updatedCount;
     }
 
-    private MaintenanceResponseDTO convertoDTO(Maintenance maintenance) {
+    private MaintenanceResponseDTO convertDTO(Maintenance maintenance) {
 
         MaintenanceResponseDTO dto = new MaintenanceResponseDTO();
 

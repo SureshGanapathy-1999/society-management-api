@@ -2,11 +2,16 @@ package com.example.Society.Model;
 
 import com.example.Society.Config.MaintenanceStatus;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.Fetch;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "maintenance_bill",
         uniqueConstraints = {@UniqueConstraint( columnNames = {"flat_id","bill_month","bill_year"}
@@ -53,94 +58,4 @@ public class Maintenance extends BaseModel {
         this.maintenanceStatus = MaintenanceStatus.GENERATED;
     }
 
-    //Getters and Setters
-
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getBillNumber() {
-        return billNumber;
-    }
-
-    public void setBillNumber(String billNumber) {
-        this.billNumber = billNumber;
-    }
-
-    public Flat getFlat() {
-        return flat;
-    }
-
-    public void setFlat(Flat flat) {
-        this.flat = flat;
-    }
-
-    public Integer getBillMonth() {
-        return billMonth;
-    }
-
-    public void setBillMonth(Integer billMonth) {
-        this.billMonth = billMonth;
-    }
-
-    public Integer getBillYear() {
-        return billYear;
-    }
-
-    public void setBillYear(Integer billYear) {
-        this.billYear = billYear;
-    }
-
-    public BigDecimal getTotalAmount() {
-        return totalAmount;
-    }
-
-    public void setTotalAmount(BigDecimal totalAmount) {
-        this.totalAmount = totalAmount;
-    }
-
-    public BigDecimal getLateFee() {
-        return lateFee;
-    }
-
-    public void setLateFee(BigDecimal lateFee) {
-        this.lateFee = lateFee;
-    }
-
-    public BigDecimal getMaintenanceCost() {
-        return maintenanceCost;
-    }
-
-    public void setMaintenanceCost(BigDecimal maintenanceCost) {
-        this.maintenanceCost = maintenanceCost;
-    }
-
-    public MaintenanceStatus getMaintenanceStatus() {
-        return maintenanceStatus;
-    }
-
-    public void setMaintenanceStatus(MaintenanceStatus maintenanceStatus) {
-        this.maintenanceStatus = maintenanceStatus;
-    }
-
-    public LocalDate getDueDate() {
-        return dueDate;
-    }
-
-    public void setDueDate(LocalDate dueDate) {
-        this.dueDate = dueDate;
-    }
-
-    public LocalDateTime getGeneratedAt() {
-        return generatedAt;
-    }
-
-    public void setGeneratedAt(LocalDateTime generatedAt) {
-        this.generatedAt = generatedAt;
-    }
 }
