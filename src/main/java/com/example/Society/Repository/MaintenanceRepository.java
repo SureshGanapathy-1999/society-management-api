@@ -17,4 +17,6 @@ public interface MaintenanceRepository extends JpaRepository<Maintenance, Long> 
             List<MaintenanceStatus> statuses,
             LocalDate currentDate
     );
+
+    List<Maintenance> findByFlatIdOrderByBillYearAscBillMonthAsc(Long flatId);
 }

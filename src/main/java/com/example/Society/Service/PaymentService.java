@@ -7,7 +7,9 @@ import com.example.Society.DTO.PaymentRequestDTO;
 import com.example.Society.DTO.PaymentResponseDTO;
 import com.example.Society.Model.Maintenance;
 import com.example.Society.Model.Payment;
+import com.example.Society.Model.PaymentAllocation;
 import com.example.Society.Repository.MaintenanceRepository;
+import com.example.Society.Repository.PaymentAllocationRepository;
 import com.example.Society.Repository.PaymentRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
@@ -19,10 +21,12 @@ public class PaymentService {
 
     private final PaymentRepository paymentRepository;
     private final MaintenanceRepository maintenanceRepository;
+    private final PaymentAllocationRepository paymentAllocationRepository;
 
-    public PaymentService(PaymentRepository paymentRepository, MaintenanceRepository maintenanceRepository) {
+    public PaymentService(PaymentRepository paymentRepository, MaintenanceRepository maintenanceRepository, PaymentAllocationRepository paymentAllocationRepository) {
         this.paymentRepository = paymentRepository;
         this.maintenanceRepository = maintenanceRepository;
+        this.paymentAllocationRepository = paymentAllocationRepository;
     }
 
     @Transactional
@@ -39,7 +43,7 @@ public class PaymentService {
         Maintenance maintenance = maintenanceRepository.findById(paymentRequestDTO.getMaintenanceId())
                 .orElseThrow(() -> new IllegalArgumentException("Maintenance bill not found"));
 
-        BigDecimal totalPaid = paymentRepository.sumAmountPaidByMaintenanceIdAndPaymentStatus(maintenance.getId() , PaymentStatus.SUCCESS);
+        BigDecimal totalPaid = paymentAllocationRepository.sumAllocatedAmountByMaintenanceIdAndPaymentStatus(maintenance.getId() , PaymentStatus.SUCCESS);
 
         if(totalPaid == null){
             totalPaid = BigDecimal.ZERO;
@@ -66,6 +70,13 @@ public class PaymentService {
         payment.setReceivedBy(receivedBy);
 
         Payment savedPayment = paymentRepository.save(payment);
+
+        PaymentAllocation paymentAllocation = new PaymentAllocation();
+        paymentAllocation.setPayment(savedPayment);
+        paymentAllocation.setMaintenance(maintenance);
+        paymentAllocation.setAmountAllocated(paymentRequestDTO.getAmountPaid());
+
+        paymentAllocationRepository.save(paymentAllocation);
 
         BigDecimal updatedTotalPaid = totalPaid.add(paymentRequestDTO.getAmountPaid());
 
