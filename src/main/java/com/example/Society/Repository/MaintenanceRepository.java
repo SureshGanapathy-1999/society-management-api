@@ -2,6 +2,7 @@ package com.example.Society.Repository;
 
 import com.example.Society.Config.MaintenanceStatus;
 import com.example.Society.Model.Maintenance;
+import com.sun.tools.javac.Main;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -19,4 +20,6 @@ public interface MaintenanceRepository extends JpaRepository<Maintenance, Long> 
     );
 
     List<Maintenance> findByFlatIdOrderByBillYearAscBillMonthAsc(Long flatId);
+
+    List<Maintenance> findByFlat_Owner_User_UsernameOrderByBillYearDescBillMonthDesc(String username);
 }

@@ -12,4 +12,6 @@ public interface FlatRepository extends JpaRepository<Flat,Long> {
     boolean existsByWingIdAndFlatNumber(Long wingId, String flatNumber);
 
     boolean existsByOwnerId(Long ownerId);
+
+    List<Flat> findByOwner_User_Username(String username);
 }

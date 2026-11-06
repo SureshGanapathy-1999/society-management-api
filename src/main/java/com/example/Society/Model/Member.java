@@ -42,4 +42,8 @@ public class Member extends BaseModel{
     @OneToMany(mappedBy = "owner", fetch = FetchType.LAZY)
     private List<Flat> flats;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", unique = true)
+    private User user;
+
 }

@@ -11,8 +11,10 @@ import com.example.Society.Model.Flat;
 import com.example.Society.Model.Maintenance;
 import com.example.Society.Repository.FlatRepository;
 import com.example.Society.Repository.MaintenanceRepository;
-import jakarta.transaction.Transactional;
+
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
@@ -126,6 +128,12 @@ public class MaintenanceService {
         }
 
         return generatedBills;
+    }
+
+    @Transactional(readOnly = true)
+    public List<MaintenanceResponseDTO> getMyMaintenanceBills(String username){
+        return maintenanceRepository.findByFlat_Owner_User_UsernameOrderByBillYearDescBillMonthDesc(username)
+                .stream().map(this::convertDTO).toList();
     }
 
     @Transactional

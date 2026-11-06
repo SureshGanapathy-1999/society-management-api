@@ -39,4 +39,7 @@ public class User extends BaseModel{
     @JoinColumn(name = "role_id", nullable = false)
     private Role role;
 
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
+    private Member member;
+
 }

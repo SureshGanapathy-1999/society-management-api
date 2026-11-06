@@ -11,6 +11,7 @@ import com.example.Society.Repository.FlatRepository;
 import com.example.Society.Repository.MemberRepository;
 import com.example.Society.Repository.WingRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 import java.util.List;
@@ -26,6 +27,12 @@ public class FlatService {
         this.repository = repository;
         this.wingRepository = wingRepository;
         this.memberRepository = memberRepository;
+    }
+
+    @Transactional(readOnly = true)
+    public List<FlatResponseDTO> getMyFlats(String username) {
+        return repository.findByOwner_User_Username(username)
+                .stream().map(this::convertToFlatResponseDTO).toList();
     }
 
     //create flat inside wing

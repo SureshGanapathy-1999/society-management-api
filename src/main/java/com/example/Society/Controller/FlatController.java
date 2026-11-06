@@ -5,6 +5,7 @@ import com.example.Society.DTO.FlatResponseDTO;
 import com.example.Society.Service.FlatService;
 import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -59,6 +60,12 @@ public class FlatController {
     @PutMapping("/{flatId}")
     public FlatResponseDTO updateFlat(@PathVariable Long flatId, @Valid @RequestBody FlatRequestDTO flatRequestDTO) {
         return flatService.updateFlatInfo(flatId,flatRequestDTO);
+    }
+
+    @GetMapping("/my-flats")
+    @PreAuthorize("hasRole('MEMBER')")
+    public List<FlatResponseDTO> getMyFlats(Authentication authentication) {
+        return flatService.getMyFlats(authentication.getName());
     }
 
 }

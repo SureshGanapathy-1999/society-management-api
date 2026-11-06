@@ -1,9 +1,11 @@
 package com.example.Society.Controller;
 
+import com.example.Society.DTO.MemberLoginRequestDTO;
 import com.example.Society.DTO.UserRequestDTO;
 import com.example.Society.DTO.UserResponseDTO;
 import com.example.Society.Service.UserService;
 import jakarta.validation.Valid;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.util.*;
 
@@ -50,6 +52,17 @@ public class UserController {
     @DeleteMapping("/{user_id}")
     public String deleteUser(@PathVariable Long user_id) {
         return userService.deleteUser(user_id);
+    }
+
+    // Create login account for an existing member
+
+    @PostMapping("/member/{memberId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SOCIETY_ADMIN')")
+    public UserResponseDTO createMemberLogin(
+            @PathVariable Long memberId,
+            @Valid @RequestBody MemberLoginRequestDTO requestDTO) {
+
+        return userService.createMemberLogin(memberId, requestDTO);
     }
 
 }
